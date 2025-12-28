@@ -10,16 +10,23 @@ from reportlab.lib.enums import TA_JUSTIFY
 # ---------------------- #
 # Page Config
 # ---------------------- #
-st.set_page_config(page_title="AI Research Paper Summarizer", layout="centered")
+st.set_page_config(
+    page_title="AI Research Paper Summarizer",
+    layout="centered"
+)
 
 st.title("🧠 AI Research Paper Summarizer")
-st.markdown("""
-Upload a research paper PDF, choose summary preferences, and get an AI-generated summary instantly.
-""")
+st.markdown(
+    "Upload a research paper PDF, choose summary preferences, "
+    "and get an AI-generated summary instantly."
+)
 
-# Session state
+# ---------------------- #
+# Session State
+# ---------------------- #
 if "extracted_text" not in st.session_state:
     st.session_state.extracted_text = ""
+
 if "summary" not in st.session_state:
     st.session_state.summary = ""
 
@@ -27,29 +34,37 @@ if "summary" not in st.session_state:
 # Upload PDF
 # ---------------------- #
 st.header("📄 1. Upload Research Paper")
-uploaded_file = st.file_uploader("Upload a research paper PDF", type="pdf")
+uploaded_file = st.file_uploader(
+    "Upload a research paper PDF",
+    type="pdf"
+)
+
+# Clear previous results if a new file is uploaded
+if uploaded_file and st.session_state.summary:
+    st.session_state.extracted_text = ""
+    st.session_state.summary = ""
 
 # ---------------------- #
 # Summary Options
 # ---------------------- #
 st.header("🎯 2. Summary Style")
-style = st.selectbox("Choose summary style:", [
-    "Simple Summary",
-    "Bullet Points",
-    "Section-wise Summary"
-])
+style = st.selectbox(
+    "Choose summary style:",
+    ["Simple Summary", "Bullet Points", "Section-wise Summary"]
+)
 
 st.header("📏 3. Summary Length")
-length = st.selectbox("Choose summary length:", [
-    "Short (~100 words)",
-    "Medium (~300 words)",
-    "Long (~500+ words)"
-])
+length = st.selectbox(
+    "Choose summary length:",
+    ["Short (~100 words)", "Medium (~300 words)", "Long (~500+ words)"]
+)
 
 # ---------------------- #
 # Summarize
 # ---------------------- #
-if uploaded_file and st.button("🚀 Summarize"):
+MAX_CHARS = 3000
+
+if uploaded_file and st.button("🚀 Summarize", type="primary"):
     try:
         with st.spinner("⏳ Extracting text from PDF..."):
             text = extract_text_from_pdf(uploaded_file)
@@ -57,10 +72,9 @@ if uploaded_file and st.button("🚀 Summarize"):
         st.session_state.extracted_text = text
 
         with st.spinner("🧠 Generating summary..."):
-            summary = summarize_text(text[:3000], style, length)
+            summary = summarize_text(text[:MAX_CHARS], style, length)
 
         st.session_state.summary = summary
-
         st.success("✅ Summary generated successfully!")
 
     except ValueError as e:
@@ -73,24 +87,25 @@ if st.session_state.summary:
     st.header("📋 4. Summary")
     st.write(st.session_state.summary)
 
-    # Download TXT
+    # Download as TXT
     st.download_button(
-        "📄 Download Summary as TXT",
-        st.session_state.summary.encode("utf-8"),
+        label="📄 Download Summary as TXT",
+        data=st.session_state.summary.encode("utf-8"),
         file_name="summary.txt",
         mime="text/plain"
     )
 
-    # Download PDF
+    # Download as PDF
     pdf_buffer = BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+
     styles = getSampleStyleSheet()
     custom_style = ParagraphStyle(
-        "CustomStyle",
+        name="CustomStyle",
         parent=styles["Normal"],
         fontSize=11,
         leading=14,
-        alignment=TA_JUSTIFY
+        alignment=TA_JUSTIFY,
     )
 
     story = []
@@ -103,8 +118,8 @@ if st.session_state.summary:
     pdf_buffer.seek(0)
 
     st.download_button(
-        "📝 Download Summary as PDF",
-        pdf_buffer.getvalue(),
+        label="📝 Download Summary as PDF",
+        data=pdf_buffer.getvalue(),
         file_name="summary.pdf",
         mime="application/pdf"
     )
@@ -112,7 +127,7 @@ if st.session_state.summary:
 # ---------------------- #
 # Chat with Paper
 # ---------------------- #
-if st.session_state.extracted_text:
+if st.session_state.extracted_text and st.session_state.summary:
     st.header("💬 5. Chat with Paper")
 
     user_question = st.text_input("Ask a question about the paper:")

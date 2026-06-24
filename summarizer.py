@@ -6,15 +6,13 @@ from dotenv import load_dotenv # Import load_dotenv
 load_dotenv()
 
 # Configure the Gemini API key
-# Ensure GEMINI_API_KEY is set in your environment variables
+# Ensure z is set in your environment variables
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel(
     model_name="models/gemini-2.5-flash"
 )
 
-response = model.generate_content("Summarize this paper")
-print(response.text)
 
 # Function to summarize a given research paper text based on style and length preferences
 def summarize_text(text, style, length):
@@ -59,7 +57,7 @@ def summarize_text(text, style, length):
 def ask_question_about_text(text, question):
     """
     Takes paper text and a user's question,
-    sends them to the OpenAI API,
+    sends them to the Gemini API,
     and returns a relevant answer.
     """
 

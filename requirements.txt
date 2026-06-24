@@ -3,3 +3,6 @@ PyPDF2
 google-generativeai
 python-dotenv
 reportlab
+rouge-score
+bert-score
+torch

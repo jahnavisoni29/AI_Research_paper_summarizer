@@ -1,6 +1,3 @@
-# Environment variables
-.env
-
 # Virtual environments
 .venv/
 venv/
@@ -13,3 +10,7 @@ __pycache__/
 temp.pdf
 summary.pdf
 summary.txt
+
+#Research papers used for evaluation
+papers/
+

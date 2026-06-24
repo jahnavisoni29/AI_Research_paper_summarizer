@@ -40,9 +40,14 @@ uploaded_file = st.file_uploader(
 )
 
 # Clear previous results if a new file is uploaded
-if uploaded_file and st.session_state.summary:
-    st.session_state.extracted_text = ""
-    st.session_state.summary = ""
+if "current_file" not in st.session_state:
+    st.session_state.current_file = None
+
+if uploaded_file:
+    if st.session_state.current_file != uploaded_file.name:
+        st.session_state.current_file = uploaded_file.name
+        st.session_state.summary = ""
+        st.session_state.extracted_text = ""
 
 # ---------------------- #
 # Summary Options

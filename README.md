@@ -238,6 +238,7 @@ $env:GEMINI_API_KEY="your_api_key_here"
 ```bash
 export GEMINI_API_KEY="your_api_key_here"
 ```
+Note: The API key can also be provided through a .env file
 
 ## 5. Run the Application
 
